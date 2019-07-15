@@ -7,6 +7,7 @@ const PORT = 9100;
 const app = express();
 
 let cnt = 0;
+let interval = 1;
 const statusCodes = [200, 201, 400, 403, 404, 500];
 
 const counter = new promClient.Counter({
@@ -35,36 +36,44 @@ const histogram = new promClient.Histogram({
 const summary = new promClient.Summary({
   name: 'prom_sample_summary',
   help: 'prom_sample_summary_help',
-  labelNames: ['status_code'],
-  buckets: [20, 40, 60, 80, 100],
 });
+
+gauge.set(0);
 
 setInterval(() => {
   // increase counter value
   counter.inc();
 
   // increase adn decrease gauge value
-  if (cnt > 10) {
-    gauge.dec();
+  if (interval === 1) {
+    gauge.inc();
   }
   else {
-    gauge.inc();
+    gauge.dec();
+  }
+
+  cnt += interval;
+  console.log(cnt);
+  console.log(gauge._getValue())
+  console.log(interval);
+  if (cnt > 10) {
+    interval = -1;
+  }
+  else if (cnt < 0) {
+    interval = 1;
   }
 
   // set labeled gauage value
   labeledGauge.labels('10').set(cnt*10);
-  labeledGauge.set({id: '100'}, cnt*100);
+  labeledGauge.set({id: '20'}, cnt*20);
 
   // set histogram value
   const status = Math.floor(Math.random() * statusCodes.length);
   const duration = Math.floor(Math.random() * 100);
 
-  console.log('status : ', statusCodes[status]);
-  console.log('duration : ', duration);
   histogram.labels(statusCodes[status]).observe(duration);
-  summary.labels(statusCodes[status]).observe(duration);
-  cnt++;
-}, 5000);
+  summary.observe(duration);
+}, 15000);
 
 app.get('/metrics', (req, res) => {
   res.set('Content-Type', promClient.register.contentType)
