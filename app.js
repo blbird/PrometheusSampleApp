@@ -36,6 +36,7 @@ const histogram = new promClient.Histogram({
 const summary = new promClient.Summary({
   name: 'prom_sample_summary',
   help: 'prom_sample_summary_help',
+  labelNames: ['status_code'],
 });
 
 gauge.set(0);
@@ -53,26 +54,26 @@ setInterval(() => {
   }
 
   cnt += interval;
-  console.log(cnt);
-  console.log(gauge._getValue())
-  console.log(interval);
-  if (cnt > 10) {
+  if (cnt >= 10) {
     interval = -1;
   }
-  else if (cnt < 0) {
+  else if (cnt <= 0) {
     interval = 1;
   }
 
   // set labeled gauage value
-  labeledGauge.labels('10').set(cnt*10);
-  labeledGauge.set({id: '20'}, cnt*20);
+  labeledGauge.labels('10').set(cnt*2);
+  labeledGauge.set({id: '20'}, cnt*3);
 
   // set histogram value
   const status = Math.floor(Math.random() * statusCodes.length);
   const duration = Math.floor(Math.random() * 100);
 
+  console.log(status);
+  console.log(duration)
+
   histogram.labels(statusCodes[status]).observe(duration);
-  summary.observe(duration);
+  summary.labels(statusCodes[status]).observe(duration);
 }, 15000);
 
 app.get('/metrics', (req, res) => {
