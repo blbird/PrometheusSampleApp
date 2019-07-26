@@ -62,15 +62,12 @@ setInterval(() => {
   }
 
   // set labeled gauage value
-  labeledGauge.labels('10').set(cnt*2);
-  labeledGauge.set({id: '20'}, cnt*3);
+  labeledGauge.labels('2').set(cnt*2);
+  labeledGauge.set({id: '3'}, cnt*3);
 
   // set histogram value
   const status = Math.floor(Math.random() * statusCodes.length);
   const duration = Math.floor(Math.random() * 100);
-
-  console.log(status);
-  console.log(duration)
 
   histogram.labels(statusCodes[status]).observe(duration);
   summary.labels(statusCodes[status]).observe(duration);
