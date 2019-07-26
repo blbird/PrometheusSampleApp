@@ -71,7 +71,7 @@ setInterval(() => {
 
   histogram.labels(statusCodes[status]).observe(duration);
   summary.labels(statusCodes[status]).observe(duration);
-}, 15000);
+}, 10000);
 
 app.get('/metrics', (req, res) => {
   res.set('Content-Type', promClient.register.contentType)
