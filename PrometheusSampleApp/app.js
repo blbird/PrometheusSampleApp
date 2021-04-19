@@ -42,6 +42,7 @@ const summary = new promClient.Summary({
 gauge.set(0);
 
 setInterval(() => {
+  console.log('updated');
   // increase counter value
   counter.inc();
 
@@ -71,9 +72,10 @@ setInterval(() => {
 
   histogram.labels(statusCodes[status]).observe(duration);
   summary.labels(statusCodes[status]).observe(duration);
-}, 10000);
+}, 15000);
 
 app.get('/metrics', (req, res) => {
+  console.log('called metrics');
   res.set('Content-Type', promClient.register.contentType)
   res.end(promClient.register.metrics())
 });
