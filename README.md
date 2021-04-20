@@ -136,6 +136,7 @@ setInterval(() => {
 
 ### 어플리케이션 실행
 ```
+cd PrometheusSampleApp
 npm install
 npm start
 ```
